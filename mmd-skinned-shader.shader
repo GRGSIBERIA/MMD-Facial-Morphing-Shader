@@ -1,4 +1,4 @@
-Shader "MMD-Skinned-Shader" {
+Shader "MMD-Facial-Morphing-Shader" {
   Properties {
   	_MorphingMapSize ("Morphing Map Size", int) = 512
 
@@ -35,12 +35,21 @@ Shader "MMD-Skinned-Shader" {
     	}
 
       float4 SummateMorphVertex(float u, float v) {
+        // RGBAからfloat型に変換するためのおまじない
         const float4 bitShifts = float4(1.0, 1/255.0, 1/65025.0, 1/160581375.0);
 
-        return %summate%
         /*
           tex2D(_MorphingMap<number>, u, v) * dot(tex2D(_MagnitudeMap<number>, u, v).xyzw, bitShifts) * _Weight<number>;
           */
+        return %summate%;
+
+        /*
+        メモ　xy成分だけ入れて，z成分を計算して求める方法
+        r^2 = x^2 + y^2 + z^2
+        z^2 = r^2 - x^2 - y^2
+        sqrt(z^2) = sqrt(r^2 - x^2 - y^2)
+        */
+
       }
 
     	// フラグメント，ピクセルシェーダのようなもの
