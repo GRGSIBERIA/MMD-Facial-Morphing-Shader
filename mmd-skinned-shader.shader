@@ -24,12 +24,16 @@ Shader "MMD-Skinned-Shader" {
     		v2f output;
     		int index = int(output.pos[3]);	// できるかな？
     		float2 utilized_uv = CalcUtilizedUVCoordinate(index);
-    		int referenced_index = CalcReferencedIndex(utilized_uv);
 
-    		if (referenced_index != 0xFFFFFFFF) {
-    			
+    		if (CheckToUtilizeSkin(utilized_uv)) {
+    			v2f.pos = v.pos + SummateSkinnedVector(utilized_uv);
+          v2f.uv = v.uv;
     		}
     	}
+
+      bool CheckToUtilizeSkin(float4 utilized_uv) {
+        return CalcReferencedIndex(utilized_uv) != 0xFFFFFFFF ? true : false;
+      }
 
       // 全ての表情のベクトルを足し合わせる
       float4 SummateSkinnedVector(float2 utilized_uv) {
@@ -40,7 +44,7 @@ Shader "MMD-Skinned-Shader" {
             %end
             tex2D(_SkinnedMap<textureLength-1>, utilized_uv) * tex2D(_WeightMap<textureLength-1>, utilized_uv) * _Weight<textureLength-1>;
           %else
-            0;
+            float4(0);
           %end
       }
 
