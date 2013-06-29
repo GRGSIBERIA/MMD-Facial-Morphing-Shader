@@ -22,8 +22,6 @@ MikuMikuDance for Unityの表情用シェーダーをちょっと組めないか
 
 モーフしない頂点のほうが多いので，無駄な情報が書き込まれてしまう．
 
-==========================
-
 # 実装
 
 あまり賢くない実装をする．
@@ -53,6 +51,3 @@ MagnitudeMapはRGBAで表される．
 Weightはfloat型で表される．
 0.0から1.0までの値を取り，表情の変化量として表される．
 従って，SkinnedVector = Morphing x　Magnitude x Weightで表情が表される．
-
-#### 実装
-

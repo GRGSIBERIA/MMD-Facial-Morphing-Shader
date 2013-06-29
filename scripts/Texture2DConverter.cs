@@ -32,7 +32,6 @@ namespace MMDMorphing
 					bmp.SetPixel(colum, line, color);
 				}
 			}
-
 			return bmp;
 		}
 
