@@ -2,17 +2,18 @@ using UnityEngine;
 using System.Collections;
 using System.Drawing;
 
-namespace t2dc
+namespace MMDMorphing
 {
+	/// <summary>
+	/// Texture2D‚ğŠeí‰æ‘œŒ`®‚É•ÏŠ·‚·‚é
+	/// System.Drawing.DLL‚Í•K{
+	/// </summary>
 	public class Texture2DConverter
 	{
-		Texture2D current_texture;
 		Bitmap bitmap;
 
 		public Texture2DConverter(Texture2D texture)
 		{
-			current_texture = texture;
-
 			bitmap = InstanceBitmap(texture);
 		}
 

@@ -34,7 +34,7 @@ Shader "MMD-Skinned-Shader" {
       float4 SummateMorphVertex(float u, float v) {
         return 
           tex2D(_MorphingMap<number>, u, v) * tex2D(_MagnitudeMap<number>, u, v) * _Weight<number> +
-          tex2D(_MorphingMap<skinCount-1>, u, v) * tex2D(_MagnitudeMap<skinCount-1>, u, v) * _Weight<skinCount-1>;
+          tex2D(_MorphingMap<skinCount-1>, u, v) * float(tex2D(_MagnitudeMap<skinCount-1>, u, v)) * _Weight<skinCount-1>;
       }
 
     	// フラグメント，ピクセルシェーダのようなもの
