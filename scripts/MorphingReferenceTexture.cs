@@ -41,14 +41,14 @@ namespace MMDMorphing
 				Vector3 morph = target;
 				float m = morph.magnitude;
 				morph.Normalize();
-				this.morph = new Color(morph.x, morph.y, morph.z);
+				this.morph = new Color(morph.x, morph.y, morph.z);	// rgb = xyz
 				var bits = BitConverter.GetBytes(m);
 				float buf = 1f / 255f;
-				magnitude = new Color(buf * bits[0], buf * bits[1], buf * bits[2], buf * bits[3]);
+				magnitude = new Color(buf * bits[0], buf * bits[1], buf * bits[2], buf * bits[3]);	// rgba = 0123
 			}
 		}
 
-		class MorphTexture
+		public class MorphTexture
 		{
 			public Texture2D morph;
 			public Texture2D magnitude;
