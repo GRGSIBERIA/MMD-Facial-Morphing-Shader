@@ -13,12 +13,10 @@ namespace MMDMorphing
 		List<MMDSkinsScript> skins;
 		MMDSkinsScript base_skin;
 
-		public MorphingReferenceTexture(List<MMDSkinsScript> skins)
+		public MorphingReferenceTexture(MMDSkinsScript base_skin, List<MMDSkinsScript> excluded_base_skins)
 		{
-			var base_index = skins.FindIndex(i => i.name == "base");
-			this.base_skin = skins[base_index];
-			skins.RemoveAt(base_index);
-			this.skins = skins;
+			this.base_skin = base_skin;
+			this.skins = excluded_base_skins;
 		}
 
 		public MorphTexture[] BakeTextures(int texture_size)
@@ -50,11 +48,13 @@ namespace MMDMorphing
 
 		public class MorphTexture
 		{
+			public string name;
 			public Texture2D morph;
 			public Texture2D magnitude;
 
-			public MorphTexture(int texture_size)
+			public MorphTexture(string name, int texture_size)
 			{
+				this.name = name;
 				morph = new Texture2D(texture_size, texture_size, TextureFormat.RGB24, false);
 				magnitude = new Texture2D(texture_size, texture_size, TextureFormat.RGBA32, false);
 			}
@@ -74,13 +74,13 @@ namespace MMDMorphing
 
 		MorphTexture BakeTexture(MMDSkinsScript skin, int texture_size)
 		{
-			MorphTexture texture = new MorphTexture(texture_size);
+			MorphTexture texture = new MorphTexture(skin.gameObject.name, texture_size);
 			MorphColors colors = ConvertSkinToMorphColors(skin, texture_size);
 
 			texture.morph.SetPixels(colors.morph);
 			texture.magnitude.SetPixels(colors.magnitude);
-			texture.morph.name = skin.name + "_morph";
-			texture.magnitude.name = skin.name + "_magnitude";
+			texture.morph.name = skin.gameObject.name + "_morph";
+			texture.magnitude.name = skin.gameObject.name + "_magnitude";
 			return texture;
 		}
 
