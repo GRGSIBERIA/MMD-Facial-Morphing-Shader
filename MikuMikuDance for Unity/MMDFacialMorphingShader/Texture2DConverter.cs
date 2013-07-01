@@ -2,6 +2,10 @@ using UnityEngine;
 using System.Collections;
 using System.Drawing;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace MMDMorphing
 {
 	/// <summary>
@@ -35,12 +39,13 @@ namespace MMDMorphing
 			return bmp;
 		}
 
-		void SavePng(string path)
+		public Texture2D SavePng(string path)
 		{
 			bitmap.Save(path, System.Drawing.Imaging.ImageFormat.Png);
+			return AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D)) as Texture2D;
 		}
 
-		void SaveBmp(string path)
+		public void SaveBmp(string path)
 		{
 			bitmap.Save(path, System.Drawing.Imaging.ImageFormat.Bmp);
 		}

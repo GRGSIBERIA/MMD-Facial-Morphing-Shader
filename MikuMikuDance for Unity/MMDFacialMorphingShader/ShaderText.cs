@@ -9,7 +9,7 @@ namespace MMDMorphing
 		static public string GetLiteral()
 		{
 			return @"
-Shader ""MMD-Facial-Morphing-Shader"" {
+Shader ""MMD/Morph/%name%"" {
   Properties {
     _MorphingMapSize (""Morphing Map Size"", int) = 512
 
