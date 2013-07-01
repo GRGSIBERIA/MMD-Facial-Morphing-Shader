@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using MMD.PMD;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,22 +12,49 @@ namespace MMDMorphing
 {
 	public class FacialMorphingShaderMaster
 	{
+
+		string pmd_folder;
+		string asset_name;
 		GameObject pmd_asset;
-		List<MMDSkinsScript> skins;
-		MMDSkinsScript base_skin;
+		List<PMDFormat.SkinData> skins;
+		PMDFormat.SkinData base_skin;
 		string morphing_folder;
 
-		public FacialMorphingShaderMaster(GameObject pmd_asset, GameObject[] expression_children)
+		public FacialMorphingShaderMaster(GameObject pmd_asset, string pmd_folder, string asset_name, PMDFormat.SkinData[] expression_children)
 		{
+			this.pmd_folder = pmd_folder;
+			this.asset_name = asset_name;
 			this.pmd_asset = pmd_asset;
-			string asset_name = pmd_asset.name;
-			string path = AssetDatabase.GetAssetPath(pmd_asset);
-			morphing_folder = AssetDatabase.CreateFolder(path, "Morphing");
+
+			morphing_folder = AssetDatabase.CreateFolder(pmd_folder, "Morphing");
 			skins = GatherScriptsFromGameObjects(expression_children);
-			base_skin = ExtractBaseAsExcludeBaseFromExpression(skins);
+			base_skin = ExtractBaseFromExpression(expression_children);
 		}
 
-		public void MakeMorphingShader(GameObject[] expression_children)
+		PMDFormat.SkinData ExtractBaseFromExpression(PMDFormat.SkinData[] expressions)
+		{
+			for (int i = 0; i < expressions.Length; i++)
+			{
+				if (expressions[i].skin_name == "base")
+					return expressions[i];
+			}
+			throw new Exception("expression of base not found.");
+		}
+
+		List<PMDFormat.SkinData> GatherScriptsFromGameObjects(PMDFormat.SkinData[] expression_children)
+		{
+			List<PMDFormat.SkinData> skin_data = new List<PMDFormat.SkinData>();
+			for (int i = 0; i < expression_children.Length; i++)
+			{
+				if (expression_children[i].skin_name != "base")
+				{
+					skin_data.Add(expression_children[i]);
+				}
+			}
+			return skin_data;
+		}
+
+		public void MakeMaterials(PMDFormat.SkinData[] expression_children)
 		{
 			var textures = BakingTexture(pmd_asset);
 			var textures_instances = MakeTextures(morphing_folder, textures);	// Materialにアサインするために利用
@@ -70,24 +98,6 @@ namespace MMDMorphing
 			float square = Mathf.Sqrt(vtx_count);
 			int bit_digit = (int)Math.Log(square, 2) + 1;
 			return (int)Mathf.Pow(2f, bit_digit);	// 2のべき乗サイズのテクスチャ
-		}
-
-		List<MMDSkinsScript> GatherScriptsFromGameObjects(GameObject[] children)
-		{
-			MMDSkinsScript[] scripts = new MMDSkinsScript[children.Length - 1];
-			for (int i = 0; i < scripts.Length; i++)
-			{
-				scripts[i] = children[i].GetComponent<MMDSkinsScript>();
-			}
-			return new List<MMDSkinsScript>(scripts);
-		}
-
-		MMDSkinsScript ExtractBaseAsExcludeBaseFromExpression(List<MMDSkinsScript> scripts)
-		{
-			int index = scripts.FindIndex(s => s.gameObject.name == "base");
-			MMDSkinsScript base_expression = scripts[index];
-			scripts.RemoveAt(index);
-			return base_expression;
 		}
 	}
 }

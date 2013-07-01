@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using MMD.PMD;
+
 
 namespace MMDMorphing
 {
@@ -10,10 +12,11 @@ namespace MMDMorphing
 	/// </summary>
 	public class MorphingReferenceTexture
 	{
-		List<MMDSkinsScript> skins;
-		MMDSkinsScript base_skin;
+		
+		List<PMDFormat.SkinData> skins;
+		PMDFormat.SkinData base_skin;
 
-		public MorphingReferenceTexture(MMDSkinsScript base_skin, List<MMDSkinsScript> excluded_base_skins)
+		public MorphingReferenceTexture(PMDFormat.SkinData base_skin, List<PMDFormat.SkinData> excluded_base_skins)
 		{
 			this.base_skin = base_skin;
 			this.skins = excluded_base_skins;
@@ -72,27 +75,27 @@ namespace MMDMorphing
 			}
 		}
 
-		MorphTexture BakeTexture(MMDSkinsScript skin, int texture_size)
+		MorphTexture BakeTexture(PMDFormat.SkinData skin, int texture_size)
 		{
-			MorphTexture texture = new MorphTexture(skin.gameObject.name, texture_size);
+			MorphTexture texture = new MorphTexture(skin.skin_name, texture_size);
 			MorphColors colors = ConvertSkinToMorphColors(skin, texture_size);
 
 			texture.morph.SetPixels(colors.morph);
 			texture.magnitude.SetPixels(colors.magnitude);
-			texture.morph.name = skin.gameObject.name + "_morph";
-			texture.magnitude.name = skin.gameObject.name + "_magnitude";
+			texture.morph.name = skin.skin_name + "_morph";
+			texture.magnitude.name = skin.skin_name + "_magnitude";
 			return texture;
 		}
 
-		MorphColors ConvertSkinToMorphColors(MMDSkinsScript skin, int texture_size)
+		MorphColors ConvertSkinToMorphColors(PMDFormat.SkinData skin, int texture_size)
 		{
 			MorphColors colors = new MorphColors(texture_size);
-			for (int i = 0; i < skin.targetIndices.Length; i++)
+			for (int i = 0; i < skin.skin_vert_count; i++)
 			{
-				int index = skin.targetIndices[i];
-				int base_index = base_skin.targetIndices[index];
+				int index = (int)skin.skin_vert_data[i].skin_vert_index;
+				int base_index = (int)base_skin.skin_vert_data[index].skin_vert_index;
 
-				MorphColor m = new MorphColor(skin.morphTarget[i]);
+				MorphColor m = new MorphColor(skin.skin_vert_data[i].skin_vert_pos);
 				colors.morph[base_index] = m.morph;
 				colors.magnitude[base_index] = m.magnitude;
 			}
