@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+
+#if UNITY_EDITOR
 using MMD.PMD;
 
 
@@ -111,3 +113,4 @@ namespace MMDMorphing
 		}
 	}
 }
+#endif

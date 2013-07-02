@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections;
-using System.Drawing;
 
 #if UNITY_EDITOR
 using UnityEditor;
-#endif
+using System.Drawing;
 
 namespace MMDMorphing
 {
@@ -51,3 +50,5 @@ namespace MMDMorphing
 		}
 	}
 }
+
+#endif

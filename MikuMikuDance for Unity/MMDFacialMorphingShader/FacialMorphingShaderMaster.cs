@@ -6,7 +6,6 @@ using MMD.PMD;
 
 #if UNITY_EDITOR
 using UnityEditor;
-#endif
 
 namespace MMDMorphing
 {
@@ -26,7 +25,9 @@ namespace MMDMorphing
 			this.asset_name = asset_name;
 			this.pmd_asset = pmd_asset;
 
-			morphing_folder = AssetDatabase.CreateFolder(pmd_folder, "Morphing");
+
+			morphing_folder = AssetDatabase.CreateFolder(pmd_folder, "Morphs");
+
 			skins = GatherScriptsFromGameObjects(expression_children);
 			base_skin = ExtractBaseFromExpression(expression_children);
 		}
@@ -54,24 +55,40 @@ namespace MMDMorphing
 			return skin_data;
 		}
 
-		public void MakeMaterials(PMDFormat.SkinData[] expression_children)
+		public void MakeMaterial(PMDFormat.SkinData[] expression_children)
 		{
 			var textures = BakingTexture(pmd_asset);
-			var textures_instances = MakeTextures(morphing_folder, textures);	// Materialにアサインするために利用
+			var textures_instances = MakeTextures(morphing_folder, textures);
+			var material = MakeShaderAsset(textures);	// シェーダをここで生成して，マテリアルも返してくれる
+
+			
+		}
+
+		void SetupAsSaveMaterial(MorphingReferenceTexture.MorphTexture[] textures, Material material)
+		{
+			string path = morphing_folder + "/" + asset_name;
+			MaterialMaker maker = new MaterialMaker(textures);
+			maker.SaveMaterial("", material);
+		}
+
+		Material MakeShaderAsset(MorphingReferenceTexture.MorphTexture[] textures)
+		{
+			ShaderMaker shader_maker = new ShaderMaker(textures);
+			return shader_maker.SaveShader(morphing_folder, asset_name);
 		}
 
 		Dictionary<string, Texture2D> MakeTextures(string morphing_folder, MorphingReferenceTexture.MorphTexture[] textures)
 		{
-			Dictionary<string, Texture2D> texture_pathes = new Dictionary<string, Texture2D>();
+			Dictionary<string, Texture2D> texture_instances = new Dictionary<string, Texture2D>();
 			for (int i = 0; i < textures.Length; i++)
 			{
 				string morph_path = CombinePNGPathes(textures[i], "morph_");
 				string magnitude_path = CombinePNGPathes(textures[i], "magnitude_");
 				
-				texture_pathes["morph_" + textures[i].name] = BurnTextureToFolder(textures[i].morph, morph_path);
-				texture_pathes["magnitude_" + textures[i].name] = BurnTextureToFolder(textures[i].magnitude, magnitude_path);
+				texture_instances["morph_" + textures[i].name] = BurnTextureToFolder(textures[i].morph, morph_path);
+				texture_instances["magnitude_" + textures[i].name] = BurnTextureToFolder(textures[i].magnitude, magnitude_path);
 			}
-			return texture_pathes;
+			return texture_instances;			// Materialにアサインするために利用
 		}
 
 		string CombinePNGPathes(MorphingReferenceTexture.MorphTexture texture, string prefix)
@@ -101,3 +118,5 @@ namespace MMDMorphing
 		}
 	}
 }
+
+#endif
